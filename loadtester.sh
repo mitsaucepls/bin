@@ -15,7 +15,7 @@ tempfile=$(mktemp)
 function perform_requests {
     for ((i=1; i<=requests_per_thread; i++))
     do
-        curl -o /dev/null -s -w "%{time_total},%{size_download}\n" $url >> $tempfile &
+        curl -o /dev/null -s -w "%{time_total},%{size_download},%{http_code}\n" $url >> $tempfile &
         if (( $i % num_parallel_threads == 0 )); then wait; fi
     done
 }
@@ -29,6 +29,17 @@ done
 wait
 echo "Load test completed."
 
-awk -F, '{timeSum+=$1; sizeSum+=$2; count++} END {print "Average Time (seconds): " timeSum/count "\nAverage Size (bytes): " sizeSum/count}' $tempfile
+awk -F, '{
+    timeSum+=$1;
+    sizeSum+=$2;
+    count++
+    httpCodes[$3]++
+}
+END {
+    print "Time (seconds): " timeSum "\nBytes: " sizeSum "\nAverage Time (seconds): " timeSum/count "\nAverage Size (bytes): " sizeSum/count
+    for (code in httpCodes) {
+        print "HTTP Code " code ": "httpCodes[code];
+    }
+}' $tempfile
 
 rm $tempfile
