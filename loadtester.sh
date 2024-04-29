@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ ! $# -eq 3]; then
+    echo "The program requires 3 arguments."
+    exit 1
+fi
+
 url=$1
 
 num_parallel_threads=$2
