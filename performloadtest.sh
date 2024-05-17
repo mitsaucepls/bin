@@ -8,6 +8,7 @@ requests_per_thread=$3
 
 ids=$(curl -sS "$1/cats/findFirst?limit=$requests_per_thread" | jq -r '.[].cat_data | fromjson | .id')
 ids_array=($ids)
+echo "${ids_array[@]}"
 
 echo 'id'
 loadtester.sh "$1/cats/findById?id=" "$2" "$3" "${ids_array[@]}"
