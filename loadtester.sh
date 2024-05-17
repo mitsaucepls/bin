@@ -1,6 +1,8 @@
 #!/bin/bash
+# TODO parallel and sequential mode
+# TODO time limit
 
-if [ ! $# -eq 3]; then
+if [ ! $# -eq 3 ]; then
     echo "The program requires 3 arguments."
     exit 1
 fi
@@ -14,13 +16,11 @@ requests_per_thread=$3
 total_requests=$(($num_parallel_threads * $requests_per_thread))
 
 tempfile=$(mktemp)
-# echo "Starting load test: $total_requests requests to $url ($num_parallel_threads parallel threads, $requests_per_thread requests each)"
-# (seq 1 $requests_per_thread | xargs -n1 -P$requests_per_thread curl -o /dev/null -s $url) &
 
 function perform_requests {
     for ((i=1; i<=requests_per_thread; i++))
     do
-        curl -o /dev/null -s -w "%{time_total},%{size_download},%{http_code}\n" $url >> $tempfile &
+        curl -s -w ",%{time_total},%{size_download},%{http_code}\n" $url >> $tempfile &
         if (( $i % num_parallel_threads == 0 )); then wait; fi
     done
 }
@@ -36,12 +36,13 @@ echo "Load test completed."
 
 awk -F, '{
     timeSum+=$1;
-    sizeSum+=$2;
+    responseTimeSum+=$2;
+    sizeSum+=$3;
     count++
-    httpCodes[$3]++
+    httpCodes[$4]++
 }
 END {
-    print "Time (seconds): " timeSum "\nBytes: " sizeSum "\nAverage Time (seconds): " timeSum/count "\nAverage Size (bytes): " sizeSum/count
+print "Time (seconds): " timeSum "\nAverage Time (seconds): " timeSum/count "\nResponse Time (seconds): " responseTimeSum "\nAverage Response Time (seconds): " responseTimeSum/count "\nBytes: " sizeSum "\nAverage Size (bytes): " sizeSum/count
     for (code in httpCodes) {
         print "HTTP Code " code ": "httpCodes[code];
     }
