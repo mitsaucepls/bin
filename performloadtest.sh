@@ -6,10 +6,11 @@ num_parallel_threads=$2
 
 requests_per_thread=$3
 
-id=$(curl -sS $1/cats/findFirst?limit=1 | jq -r '.[0].cat_data | fromjson | .id')
+ids=$(curl -sS "$1/cats/findFirst?limit=$requests_per_thread" | jq -r '.[].cat_data | fromjson | .id')
+ids_array=($ids)
 
 echo 'id'
-loadtester.sh "$1/cats/findById?id=$id" "$2" "$3"
+loadtester.sh "$1/cats/findById?id=" "$2" "$3" "${ids_array[@]}"
 echo 'attribute'
 loadtester.sh "$1/cats/findByBreed?breed=Persian" "$2" "$3"
 echo 'attribute in array'

@@ -13,15 +13,17 @@ num_parallel_threads=$2
 
 requests_per_thread=$3
 
+variable_array=$4
+
 total_requests=$(($num_parallel_threads * $requests_per_thread))
 
 tempfile=$(mktemp)
 
-function perform_requests {
-    for ((i=1; i<=requests_per_thread; i++))
-    do
+function perform_requests() {
+    for ((i=1; i<=requests_per_thread; i++)); do
+        (( $variable_array > 0 )) && url="${url}${variable_array[i-1]"
         curl -s -w ",%{time_total},%{size_download},%{http_code}\n" $url >> $tempfile &
-        if (( $i % num_parallel_threads == 0 )); then wait; fi
+        (( $i % num_parallel_threads == 0 )) && wait
     done
 }
 
