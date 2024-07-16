@@ -1,0 +1,10 @@
+#!/bin/bash
+
+profile="local"
+
+[[ "$1" == "default" ]] && profileArg="" \
+    || { [ -n "$1" ] && { profile="$1"; profileArg="-Dspring-boot.run.profiles=$profile"; } \
+    || profileArg="-Dspring-boot.run.profiles=$profile"; }
+
+# Run Maven Spring Boot with appropriate profile settings
+mvn spring-boot:run $profileArg -Duser.timezone=Europe/Berlin -Dspring-boot.run.jvmArguments="-Xdebug"

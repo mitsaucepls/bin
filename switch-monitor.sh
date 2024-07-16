@@ -9,8 +9,8 @@ current_output=$(cat ~/current_output)
 # swap the content of the file
 if [ $# -eq 0 ]; then
     if [[ "$current_output" == "HDMI-0" ]]; then
-        echo "DP-4" > ~/current_output
-    elif [[ "$current_output" == "DP-4" ]]; then
+        echo "DP-0" > ~/current_output
+    elif [[ "$current_output" == "DP-0" ]]; then
         echo "HDMI-0" > ~/current_output
     fi
     exit 0
