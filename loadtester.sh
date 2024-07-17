@@ -2,13 +2,6 @@
 # TODO parallel and sequential mode
 # TODO time limit
 
-# if [ ! $# -eq 3 ]; then
-#     echo "The program requires 3 arguments."
-#     exit 1
-# fi
-
-#!/bin/bash
-
 url=$1
 num_parallel_threads=$2
 requests_per_thread=$3
@@ -23,7 +16,7 @@ function perform_requests() {
         if [ ${#variable_array[@]} -gt 0 ]; then
             current_url="${current_url}${variable_array[i % ${#variable_array[@]}]}"
         fi
-        curl -s -w ",%{time_total},%{size_download},%{http_code}\n" $current_url >> $tempfile &
+        curl -s "$current_url" | jq -r '"\(.["Estimated Rows"]),\(.["Planning Time"]),\(.["Scan Type"]),\(.["Actual Rows"]),\(.["Execution Time"])"' >> $tempfile &
         if (( (i + 1) % num_parallel_threads == 0 )); then
             wait
         fi
@@ -42,16 +35,17 @@ wait
 echo "Load test completed."
 
 awk -F, '{
-    timeSum+=$1;
-    responseTimeSum+=$2;
-    sizeSum+=$3;
+    estimatedRowsSum += $1;
+    planningTimeSum += $2;
+    scanTypes[$3]++;
+    actualRowsSum += $4;
+    executionTimeSum += $5;
     count++
-    httpCodes[$4]++
 }
 END {
-print "Time (seconds): " timeSum "\nAverage Time (seconds): " timeSum/count "\nResponse Time (seconds): " responseTimeSum "\nAverage Response Time (seconds): " responseTimeSum/count "\nBytes: " sizeSum "\nAverage Size (bytes): " sizeSum/count
-    for (code in httpCodes) {
-        print "HTTP Code " code ": "httpCodes[code];
+    print "Total Estimated Rows: " estimatedRowsSum "\nAverage Planning Time (seconds): " planningTimeSum/count "\nTotal Actual Rows: " actualRowsSum "\nAverage Execution Time (seconds): " executionTimeSum/count;
+    for (type in scanTypes) {
+        print "Scan Type " type ": " scanTypes[type];
     }
 }' $tempfile
 

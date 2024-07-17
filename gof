@@ -1,0 +1,4 @@
+#!/bin/bash
+
+command -v firefox > /dev/null 2>&1 && firefox $(git remote -v | grep -o -E "https://git[^ ]*" | tail -1) \
+    || firefox.exe $(git remote -v | grep -o -E "https://git[^ ]*" | tail -1)

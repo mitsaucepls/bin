@@ -1,0 +1,5 @@
+#!/bin/bash
+
+filepath=$(wslpath -w "$1")
+
+firefox.exe "$filepath"
