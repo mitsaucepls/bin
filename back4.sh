@@ -23,8 +23,8 @@ hash=`md5sum $name | cut -f1 -d" "`
 
 [[ ! -d $dir/$hash ]] && mkdir $dir/$hash && echo "Processing..."
 # [[ ! -d $dir/$hash ]] && { mkdir $dir/$hash ; echo "spliting .." ; convert -coalesce $name $dir/$hash/$hash.png ; echo ok ; }
-[[ $name == *.mp4 ]] && { echo "Extracting frames from video..." ; ffmpeg -i "$name" "$dir/$hash/$hash%04d.png" ; echo "Operation completed." ; }
-[[ $name == *.gif ]] && { echo "Splitting GIF..." ; convert -coalesce "$name" "$dir/$hash/$hash.png" ; echo "Operation completed." ; }
+[[ ! -d $dir/$hash ]] && [[ $name == *.mp4 ]] && { echo "Extracting frames from video..." ; ffmpeg -i "$name" -vf "fps=10" "$dir/$hash/$hash%04d.png" ; echo "Operation completed." ; }
+[[ ! -d $dir/$hash ]] && [[ $name == *.gif ]] && { echo "Splitting GIF..." ; convert -coalesce "$name" "$dir/$hash/$hash.png" ; echo "Operation completed." ; }
 
 
 if [ "$1" == "auto" ]; then
@@ -33,6 +33,8 @@ if [ "$1" == "auto" ]; then
     frames_per_second=30
     speed=$(bc <<< "scale=3; ($amount_of_frames/$frames_per_second) * (1/$frames_per_second)")
 fi
+
+echo "$speed"
 
 while : ; do for i in ` ls $dir/$hash -v ` ; do $prog$dir/$hash/$i ; sleep $speed ; done ; done
 
