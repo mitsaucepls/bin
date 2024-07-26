@@ -1,4 +1,11 @@
 #!/bin/bash
 
-command -v firefox > /dev/null 2>&1 && firefox $(git remote -v | grep -o -E "https://git[^ ]*" | tail -1) \
-    || firefox.exe $(git remote -v | grep -o -E "https://git[^ ]*" | tail -1)
+# Get the HTTPS URL if available
+url=$(git remote -v | grep -o -E "https://git[^ ]*" | tail -1)
+
+# Convert SSH URL to HTTPS if no HTTPS URL is found
+url=${url:-$(git remote -v | grep -o -E "git@[^ ]*" | tail -1 | sed -r 's/git@([^:]+):(.+)/https:\/\/\1\/\2/' | sed 's/\.git$//')}
+
+# Open the URL in the browser if it exists
+
+[ -n "$url" ] && (command -v firefox > /dev/null 2>&1 && firefox "$url" || firefox.exe "$url") || echo "No valid git remote URL found."
