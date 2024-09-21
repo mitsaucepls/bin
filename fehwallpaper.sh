@@ -12,7 +12,7 @@ trap cleanup SIGINT
 while true; do
     [[ -n "$last_pid" ]] && kill "$last_pid"; wait "$last_pid" 2>/dev/null
 
-    wallpaperpath="$(find $HOME/personal/background -maxdepth 1 -regex '.*\.\(jpg\|gif\|png\|jpeg\)' | shuf -n 1)"
+    wallpaperpath="$(find $HOME/personal/background -maxdepth 1 -regex '.*\.\(jpg\|gif\|mp4\|png\|jpeg\)' | shuf -n 1)"
 
     [[ "$wallpaperpath" != *.gif ]] && feh --bg-fill $wallpaperpath \
     || {

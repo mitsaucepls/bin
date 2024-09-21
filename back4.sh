@@ -20,11 +20,10 @@ name=$2
 hash=`md5sum $name | cut -f1 -d" "`
 
 [[ ! -d $dir ]] && mkdir $dir
+[[ ! -d $dir/$hash ]] && mkdir $dir/$hash
 
-[[ ! -d $dir/$hash ]] && mkdir $dir/$hash && echo "Processing..."
-# [[ ! -d $dir/$hash ]] && { mkdir $dir/$hash ; echo "spliting .." ; convert -coalesce $name $dir/$hash/$hash.png ; echo ok ; }
-[[ ! -d $dir/$hash ]] && [[ $name == *.mp4 ]] && { echo "Extracting frames from video..." ; ffmpeg -i "$name" -vf "fps=10" "$dir/$hash/$hash%04d.png" ; echo "Operation completed." ; }
-[[ ! -d $dir/$hash ]] && [[ $name == *.gif ]] && { echo "Splitting GIF..." ; convert -coalesce "$name" "$dir/$hash/$hash.png" ; echo "Operation completed." ; }
+[[ $name == *.gif ]] && { echo "Splitting GIF..." ; convert -coalesce "$name" "$dir/$hash/$hash.png" ; echo "Operation completed." ; }
+[[ $name == *.mp4 ]] && { echo "Extracting frames from video..." ; ffmpeg -i "$name" -vf "fps=10" "$dir/$hash/$hash%04d.png" ; echo "Operation completed." ; }
 
 
 if [ "$1" == "auto" ]; then
