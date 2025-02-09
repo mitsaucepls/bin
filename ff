@@ -1,0 +1,7 @@
+#!/bin/bash
+
+filepath=$(wslpath -w "$1")
+
+command -v floorp.exe > /dev/null 2>&1 && floorp.exe "$filepath" ||
+command -v firefox.exe > /dev/null 2>&1 && firefox.exe "$filepath" ||
+echo "Neither Floorp nor Firefox is installed." >&2
