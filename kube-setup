@@ -1,0 +1,20 @@
+#!/usr/bin/bash
+
+# Directory to hold the symlinks
+KUBEBUILDER_ASSETS_DIR="$(pwd)/bin/kubebuilder-assets"
+
+# Create the directory if it doesn't exist
+mkdir -p "$KUBEBUILDER_ASSETS_DIR"
+
+# Paths to the binaries
+KUBE_APISERVER_PATH=$(which kube-apiserver)
+ETCD_PATH=$(which etcd)
+KUBECTL_PATH=$(which kubectl)
+
+# Create symlinks in the KUBEBUILDER_ASSETS_DIR
+ln -sf "$KUBE_APISERVER_PATH" "$KUBEBUILDER_ASSETS_DIR/kube-apiserver"
+ln -sf "$ETCD_PATH" "$KUBEBUILDER_ASSETS_DIR/etcd"
+ln -sf "$KUBECTL_PATH" "$KUBEBUILDER_ASSETS_DIR/kubectl"
+
+# Export the KUBEBUILDER_ASSETS environment variable
+export KUBEBUILDER_ASSETS="$KUBEBUILDER_ASSETS_DIR"
