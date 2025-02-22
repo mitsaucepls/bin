@@ -1,5 +1,12 @@
 #!/usr/bin/bash
 
+# Set right registry
+export ARTIFACTORY_USER=$(pass devops/artifactory-username)
+export ARTIFACTORY_TOKEN=$(pass devops/artifactory-token)
+export ARTIFACTORY_URL="artifactory.devops.telekom.de"
+export GOPROXY="https://$ARTIFACTORY_USER:$ARTIFACTORY_TOKEN@$ARTIFACTORY_URL/artifactory/api/go/fast-go-virtual,https://$ARTIFACTORY_USER:$ARTIFACTORY_TOKEN@$ARTIFACTORY_URL/artifactory/api/go/idp-go,direct"
+export GONOSUMDB="telekom.de"
+
 # Directory to hold the symlinks
 KUBEBUILDER_ASSETS_DIR="$(pwd)/bin/kubebuilder-assets"
 
