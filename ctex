@@ -6,16 +6,19 @@ if [ $# -eq 0 ]; then
 fi
 
 engine=pdflatex
-
-skip_bibtex=0
+bibengine=bibtex
+skip_bib=0
 
 for arg in "$@"; do
     case "$arg" in
-    --skip-bibtex)
-        skip_bibtex=1
+    --skip-bib)
+        skip_bib=1
         ;;
     --engine=*)
         engine="${arg#*=}"
+        ;;
+    --bibengine=*)
+        bibengine="${arg#*=}"
         ;;
     esac
 done
@@ -38,8 +41,21 @@ esac
 
 $engine $1.tex
 
-if [ "$skip_bibtex" -eq 0 ]; then
-    bibtex $1
+# Run the bibliography engine if not skipped
+if [ "$skip_bib" -eq 0 ]; then
+    case "$bibengine" in
+    bibtex)
+        bibtex $1
+        ;;
+    biber)
+        biber $1
+        ;;
+    *)
+        echo "Invalid bibliography engine specified. Use bibtex or biber."
+        exit 3
+        ;;
+    esac
+    # Second LaTeX run
     $engine $1.tex
 fi
 
