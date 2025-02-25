@@ -7,9 +7,10 @@ url=$(git remote -v | grep -o -E "https://git[^ ]*" | tail -1)
 url=${url:-$(git remote -v | grep -o -E "git@[^ ]*" | tail -1 | sed -r 's/git@([^:]+):(.+)/https:\/\/\1\/\2/' | sed 's/\.git$//')}
 
 # Open the URL in the browser if it exists prefer floorp if it exists
+echo "trying to open: $url"
 [ -n "$url" ] && (
     command -v floorp > /dev/null 2>&1 && exec floorp "$url" ||
     command -v firefox > /dev/null 2>&1 && exec firefox "$url" ||
     command -v floorp.exe > /dev/null 2>&1 && exec floorp.exe "$url" ||
     command -v firefox.exe > /dev/null 2>&1 && exec firefox.exe "$url"
-) || echo "No valid git remote URL found."
+) || echo "No valid git remote URL found. Or no valid browser found"

@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   # Home Manager needs a bit of information about you and the paths it should
@@ -40,6 +40,7 @@
     wget
     go
     openssl
+    lombok
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
@@ -63,18 +64,54 @@
     fi
   '';
 
+  services.gpg-agent = {
+    enable = true;
+    extraConfig = ''
+      pinentry-program ${pkgs.pinentry}/bin/pinentry-curses
+    '';
+  };
+
+  programs.git = {
+    enable = true;
+    extraConfig = {
+      user.email = "markus.siegert@telekom.de";
+      user.name = "Markus Siegert";
+      user.signingkey = "086A07311308B755AE3A1E96F259364519457A1C";
+      core.editor = "nvim";
+      commit.gpgSign = "true";
+    };
+  };
+  # home.file.".gitconfig".source = "${config.home.homeDirectory}/.config/git/config";
+
   # Clone git repositories on activation.
   # This activation hook creates a "projects" directory in your home
   # directory and clones the repo if it does not already exist.
   home.activation.cloneRepos = ''
     if [ ! -d ${config.home.homeDirectory}/.config/tmux ]; then
       /usr/bin/git clone https://github.com/mitsaucepls/tmux.git ${config.home.homeDirectory}/.config/tmux
+    else
+      cd ${config.home.homeDirectory}/.config/tmux && /usr/bin/git pull
     fi
+
     if [ ! -d ${config.home.homeDirectory}/.config/nvim ]; then
       /usr/bin/git clone https://github.com/mitsaucepls/nvim.git ${config.home.homeDirectory}/.config/nvim
+    else
+      cd ${config.home.homeDirectory}/.config/nvim && /usr/bin/git pull
     fi
+
     if [ ! -d ${config.home.homeDirectory}/.config/bin ]; then
       /usr/bin/git clone https://github.com/mitsaucepls/bin.git ${config.home.homeDirectory}/.config/bin
+    else
+      cd ${config.home.homeDirectory}/.config/bin && /usr/bin/git pull
+    fi
+  '';
+
+  home.activation.rmgitconfig = ''
+    if [ ! -d ${config.home.homeDirectory}/.gitconfig ]; then
+      rm ${config.home.homeDirectory}/.gitconfig
+    fi
+    if [ ! -d ${config.home.homeDirectory}/.git-credentials ]; then
+      rm ${config.home.homeDirectory}/.git-credentials
     fi
   '';
 

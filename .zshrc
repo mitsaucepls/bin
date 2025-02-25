@@ -5,39 +5,19 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-# Path
-# export PATH=$(echo $PATH | tr ':' '\n' | grep -v '/mnt/c' | tr '\n' ':' | sed 's/:$//')
-# export PATH=$(echo $PATH | tr ':' '\n' | grep -v '/mnt/d' | tr '\n' ':' | sed 's/:$//')
-
-# export PATH=$PATH:/mnt/c/Windows/System32
-# export PATH=$PATH:/mnt/c/Windows
-# export PATH=$PATH:/mnt/c/Program\ Files/Mozilla\ Firefox
-export PATH=$PATH:/opt/google/chrome
-export PATH=$PATH:$HOME/.config/bin
-export PATH=$PATH:$HOME/.cargo/bin
-
-# Other environment variables
-export XDG_CONFIG_HOME="$HOME/.config"
-export CHROME_EXECUTABLE="$(which google-chrome-stable)"
-export LANG="en_US.UTF-8"
-export LC_ALL="en_US.UTF-8"
-export EDITOR="nvim"
-export ANDROID_AVD_HOME="$HOME/.config/.android/avd"
-export JAVA_HOME=/usr/lib/jvm/default
-
-# GPG
-export GPG_TTY=$(tty)
-
-# vi mode
-bindkey -v
-export KEYTIMEOUT=1
-
 # Aliases
 alias ls='ls --color=auto'
 alias la='ls -A --color=auto'
+alias al='sl'
+alias du='du -ah'
 alias grep='grep --color=auto'
 alias gradle-bootrun='./gradlew bootRun --args="--spring.profiles.active=dev"'
-# alias windows='cd /mnt/c/Users//'
+alias android='emulator -wipe-data -no-snapshot -no-metrics'
+alias shutdown='adb kill-server ; shutdown now'
+alias update-grub='sudo grub-mkconfig -o /boot/grub/grub.cfg'
+alias grep='rg'
+alias snvm='source /usr/share/nvm/init-nvm.sh'
+alias env='eval "$(direnv hook zsh)"'
 
 
 # Key Bindings
@@ -76,6 +56,33 @@ zstyle ':completion:*' menu select
 zmodload zsh/complist
 compinit
 _comp_options+=(globdots) # Include hidden files.
+
+# Path
+export PATH=$PATH:/opt/google/chrome
+export PATH=$PATH:/home/$USER/.config/bin
+export PATH=$PATH:/home/$USER/.cargo/bin
+
+# Other environment variables
+export XDG_CONFIG_HOME="$HOME/.config"
+export CHROME_EXECUTABLE="$(which google-chrome-stable)"
+# export LANG="en_US.UTF-8"
+# export LC_ALL="en_US.UTF-8"
+export EDITOR="nvim"
+export ANDROID_AVD_HOME="/home/$USER/.config/.android/avd"
+export JAVA_HOME=/usr/lib/jvm/default
+export __GL_SYNC_DISPLAY_DEVICE=DP-1
+export LIBVA_DRIVER_NAME=nvidia
+export XDG_SESSION_TYPE=wayland
+export GBM_BACKEND=nvidia-drm
+export __GLX_VENDOR_LIBRARY_NAME=nvidia
+export WLR_NO_HARDWARE_CURSORS=1
+
+# GPG
+export GPG_TTY=$(tty)
+
+# vi mode
+bindkey -v
+export KEYTIMEOUT=1
 
 # Use vim keys in tab complete menu:
 bindkey -M menuselect 'h' vi-backward-char
