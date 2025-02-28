@@ -49,16 +49,16 @@ EOL
     echo "Profile script created and made executable."
 fi
 
-# Detect the Windows username and configure .wslconf
+# Detect the Windows username and configure .wslconfig
 WIN_USER=$(ls /mnt/c/Users | grep -E '^[A-Za-z0-9._-]+$' | head -n 1)
 WSLCONF_PATH="/mnt/c/Users/$WIN_USER/.wslconfig"
 
 echo "Detected Windows Username: $WIN_USER"
 echo "Configuring WSL2 networking in $WSLCONF_PATH ..."
 
-# Check if the .wslconf file exists, create if not, and configure it
+# Check if the .wslconfig file exists, create if not, and configure it
 if [ -f "$WSLCONF_PATH" ]; then
-    echo ".wslconf file already exists. Checking for required settings..."
+    echo ".wslconfig file already exists. Checking for required settings..."
 
     # Check and add [wsl2] section if necessary
     if ! grep -q "\[wsl2\]" "$WSLCONF_PATH"; then
@@ -74,7 +74,7 @@ if [ -f "$WSLCONF_PATH" ]; then
         echo "networkingMode=mirrored" >> "$WSLCONF_PATH"
     fi
 
-    echo ".wslconf updated successfully."
+    echo ".wslconfig updated successfully."
 else
     # Create the file if it doesn't exist
     cat <<EOL > "$WSLCONF_PATH"
