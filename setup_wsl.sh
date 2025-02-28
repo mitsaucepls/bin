@@ -8,7 +8,7 @@ fi
 
 # Enable systemd in WSL2 (Check before adding)
 echo "Configuring WSL2 to use systemd..."
-if grep -q "systemd = true" /etc/wsl.conf; then
+if grep -q "systemd = true" /etc/wsl.conf || grep -q "systemd=true" /etc/wsl.conf ; then
     echo "Systemd is already enabled in /etc/wsl.conf."
 else
     echo "[boot]" >> /etc/wsl.conf
@@ -51,7 +51,7 @@ fi
 
 # Detect the Windows username and configure .wslconf
 WIN_USER=$(ls /mnt/c/Users | grep -E '^[A-Za-z0-9._-]+$' | head -n 1)
-WSLCONF_PATH="/mnt/c/Users/$WIN_USER/.wslconf"
+WSLCONF_PATH="/mnt/c/Users/$WIN_USER/.wslconfig"
 
 echo "Detected Windows Username: $WIN_USER"
 echo "Configuring WSL2 networking in $WSLCONF_PATH ..."
