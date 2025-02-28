@@ -104,13 +104,14 @@
     else
       cd ${config.home.homeDirectory}/.config/bin && /usr/bin/git pull
     fi
+    cp ${config.home.homeDirectory}/.config/bin/.zshrc ${config.home.homeDirectory}/.zshrc-custom
   '';
 
   home.activation.rmgitconfig = ''
-    if [ ! -d ${config.home.homeDirectory}/.gitconfig ]; then
+    if [ -f ${config.home.homeDirectory}/.gitconfig ]; then
       rm ${config.home.homeDirectory}/.gitconfig
     fi
-    if [ ! -d ${config.home.homeDirectory}/.git-credentials ]; then
+    if [ -f ${config.home.homeDirectory}/.git-credentials ]; then
       rm ${config.home.homeDirectory}/.git-credentials
     fi
   '';
