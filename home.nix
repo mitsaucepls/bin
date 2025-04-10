@@ -13,7 +13,7 @@
   # You should not change this value, even if you update Home Manager. If you do
   # want to update the value, then make sure to first check the Home Manager
   # release notes.
-  home.stateVersion = "24.11"; # Please read the comment before changing.
+  home.stateVersion = "25.05"; # Please read the comment before changing.
 
   # The home.packages option allows you to install Nix packages into your
   # environment.
@@ -22,7 +22,6 @@
     tmux
     fzf
     jq
-    helm
     gnupg
     lua
     ripgrep
@@ -41,6 +40,14 @@
     go
     openssl
     lombok
+    neofetch
+    floorp
+    k9s
+    kubectl
+    kubernetes-helm
+    waypipe
+    w3m
+    postgresql
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
@@ -113,6 +120,14 @@
     fi
     if [ -f ${config.home.homeDirectory}/.git-credentials ]; then
       rm ${config.home.homeDirectory}/.git-credentials
+    fi
+  '';
+
+  home.activation.createSocketDir= ''
+    if [ ! -d /tmp/xdg-runtime ]; then
+      export XDG_RUNTIME_DIR=/tmp/xdg-runtime
+      mkdir -p "$XDG_RUNTIME_DIR"
+      chmod 700 "$XDG_RUNTIME_DIR"
     fi
   '';
 
