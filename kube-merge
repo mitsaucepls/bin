@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+
+export KUBECONFIG=$1:$2
+kubectl config view --flatten > ~/.kube/config
+unset KUBECONFIG
