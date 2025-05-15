@@ -14,14 +14,16 @@ alias grep='grep --color=auto'
 alias gradle-bootrun='./gradlew bootRun --args="--spring.profiles.active=dev"'
 alias android='emulator -wipe-data -no-snapshot -no-metrics'
 alias shutdown='adb kill-server ; shutdown now'
+alias reboot='adb kill-server ; reboot'
 alias update-grub='sudo grub-mkconfig -o /boot/grub/grub.cfg'
 alias grep='rg'
 alias snvm='source /usr/share/nvm/init-nvm.sh'
-alias env='eval "$(direnv hook zsh)"'
-
+alias password='pwgen -s'
+alias rpcs3='QT_QPA_PLATFORM=xcb rpcs3'
+alias remote='waypipe --remote-bin="export XDG_RUNTIME_DIR=/tmp/xdg-runtime; ~/.nix-profile/bin/waypipe" ssh coder.nvim'
 
 # Key Bindings
-bindkey -s '^f' '^utmux-sessionizer\n'
+bindkey -s '^f' '^utmux-sessionizer^M'
 
 # Prompt
 autoload -U colors && colors # Load colors
@@ -44,6 +46,18 @@ setopt autocd # Automatically cd into typed directory.
 stty stop undef # Disable ctrl-s to freeze terminal.
 setopt interactive_comments
 
+# source
+# put this in ~/.bashrc or ~/.profile
+source() {
+  if [[ $1 == *"venv"* ]]; then
+    # activate the venv in the current directory
+    builtin source "$PWD/$1/bin/activate"
+  else
+    # fall back to the normal source behavior
+    builtin source "$@"
+  fi
+}
+
 # History in cache directory:
 HISTSIZE=10000000
 SAVEHIST=10000000
@@ -59,16 +73,16 @@ _comp_options+=(globdots) # Include hidden files.
 
 # Path
 export PATH=$PATH:/opt/google/chrome
-export PATH=$PATH:/home/$USER/.config/bin
-export PATH=$PATH:/home/$USER/.cargo/bin
+export PATH=$PATH:$HOME/.config/bin
+export PATH=$PATH:$HOME/.cargo/bin
 
 # Other environment variables
 export XDG_CONFIG_HOME="$HOME/.config"
 export CHROME_EXECUTABLE="$(which google-chrome-stable)"
-# export LANG="en_US.UTF-8"
-# export LC_ALL="en_US.UTF-8"
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
 export EDITOR="nvim"
-export ANDROID_AVD_HOME="/home/$USER/.config/.android/avd"
+export ANDROID_AVD_HOME="$HOME/.config/.android/avd"
 export JAVA_HOME=/usr/lib/jvm/default
 export __GL_SYNC_DISPLAY_DEVICE=DP-1
 export LIBVA_DRIVER_NAME=nvidia
@@ -76,6 +90,8 @@ export XDG_SESSION_TYPE=wayland
 export GBM_BACKEND=nvidia-drm
 export __GLX_VENDOR_LIBRARY_NAME=nvidia
 export WLR_NO_HARDWARE_CURSORS=1
+unset GIT_SSH_COMMAND
+unset GIT_SSH
 
 # GPG
 export GPG_TTY=$(tty)
@@ -124,3 +140,4 @@ bindkey '^e' edit-command-line
 bindkey -M vicmd '^[[P' vi-delete-char
 bindkey -M vicmd '^e' edit-command-line
 bindkey -M visual '^[[P' vi-delete
+eval "$(direnv hook zsh)"
