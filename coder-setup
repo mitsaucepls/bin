@@ -1,5 +1,5 @@
+eval "$(ssh-agent -s)"
+
 nix-channel --update
 
 nix-shell '<home-manager>' -A install
-
-eval "$(ssh-agent -s)"
