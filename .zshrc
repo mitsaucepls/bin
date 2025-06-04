@@ -3,7 +3,7 @@
 #
 
 # If not running interactively, don't do anything
-[[ $- != *i* ]] && return
+# [[ $- != *i* ]] && return
 
 # Aliases
 alias ls='ls --color=auto'
@@ -21,9 +21,6 @@ alias snvm='source /usr/share/nvm/init-nvm.sh'
 alias password='pwgen -s'
 alias rpcs3='QT_QPA_PLATFORM=xcb rpcs3'
 alias remote='waypipe --remote-bin="export XDG_RUNTIME_DIR=/tmp/xdg-runtime; ~/.nix-profile/bin/waypipe" ssh coder.nvim'
-
-# Key Bindings
-bindkey -s '^f' '^utmux-sessionizer^M'
 
 # Prompt
 autoload -U colors && colors # Load colors
@@ -135,6 +132,10 @@ lfcd () {
 }
 
 # Edit line in vim with ctrl-e:
+# Key Bindings
+
+bindkey -s '^f' '^utmux-sessionizer^M'
+
 autoload edit-command-line; zle -N edit-command-line
 bindkey '^e' edit-command-line
 bindkey -M vicmd '^[[P' vi-delete-char
