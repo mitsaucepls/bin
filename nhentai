@@ -1,4 +1,7 @@
 #!/usr/bin/env ruby
+# Highly inspired by this repository by nicweeaboo
+# https://github.com/nicweeaboo/nhentai-favorites-auto-pagination
+
 require 'watir'
 require 'selenium-webdriver'
 
