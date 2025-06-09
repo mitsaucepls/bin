@@ -1,0 +1,103 @@
+#!/usr/bin/env ruby
+require 'watir'
+require 'selenium-webdriver'
+
+USERNAME = ENV.fetch('NH_USERNAME') do
+  abort "Please set NH_USERNAME in your environment"
+end
+
+PASSWORD = ENV.fetch('NH_PASSWORD') do
+  abort "Please set NH_PASSWORD in your environment"
+end
+
+def wait_for_page_load(browser, timeout: 30)
+  browser.wait_until(timeout: timeout) do
+    browser.execute_script("return document.readyState") == "complete"
+  end
+end
+
+firefox_opts = Selenium::WebDriver::Firefox::Options.new
+firefox_opts.add_argument('--private-window')
+
+pervert = Watir::Browser.new :firefox, options: firefox_opts
+pervert.window.full_screen
+
+pervert.goto 'https://nhentai.net/login/'
+pervert.text_field(:name => 'username_or_email').set USERNAME
+pervert.text_field(:name => 'password').set PASSWORD
+
+# open and wait for captcha
+anchor = pervert.iframe(title: 'reCAPTCHA')
+anchor.wait_until(timeout: 30, &:present?)
+
+checkbox = anchor.span(id: 'recaptcha-anchor')
+checkbox.wait_until(timeout: 30, &:present?).click
+
+checkbox.wait_until(timeout: 120) do |cb|
+  cb.attribute_value('aria-checked') == 'true'
+end
+
+pervert.button(class: ['button','button-wide']).click
+
+pervert.a(href: '/favorites/').wait_until(timeout: 60, &:present?)
+
+while true
+  pervert.goto 'https://nhentai.net/favorites/random'
+
+  pervert.wait_until(timeout: 300) do
+    pervert.execute_script("return document.readyState") == "complete"
+  end
+
+  Watir::Wait.until(timeout: 30) { pervert.divs(class: ['tag-container','field-name']).any? }
+
+  # grab pages
+  pages_div = pervert.divs(class: ['tag-container','field-name'])
+    .find { |d| d.text.strip.start_with?('Pages:') }
+
+  pages_div.wait_until(timeout: 30, &:present?)
+
+  page_count = pages_div.span(class: 'name').text.to_i
+
+  base = pervert.url
+  page = 1
+  first = true
+
+  pervert.goto("#{base}#{page}")
+  wait_for_page_load(pervert)
+  sec = pervert.section(id: 'image-container')
+  sec.wait_until(timeout: 30, &:present?)
+
+  while page < page_count
+    if not first
+      next_btn = pervert.a(class: 'next')
+      next_btn.wait_until(timeout: 30, &:present?).click
+    else
+      first = false
+    end
+
+    sec = pervert.section(id: 'image-container')
+    sec.wait_until(timeout: 30, &:present?)
+
+    # slow‐scroll to the bottom
+    loop do
+      scrolled    = pervert.execute_script('return window.pageYOffset')
+      viewport    = pervert.execute_script('return window.innerHeight')
+      full_height = pervert.execute_script('return document.body.scrollHeight')
+      break if scrolled + viewport >= full_height
+      pervert.execute_script('window.scrollBy(0,2)')
+      sleep 0.02
+    end
+    sleep 0.5
+
+    # re‐read the **actual** page number from the URL
+    if m = pervert.url.match(%r{/(\d+)/?$})
+      page = m[1].to_i
+    end
+
+    page += 1
+  end
+
+  pervert.execute_script("window.alert('Last page. Picking anohter one...')")
+  sleep(1.5)
+  pervert.alert.ok
+end
