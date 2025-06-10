@@ -70,7 +70,7 @@ while true
   sec = pervert.section(id: 'image-container')
   sec.wait_until(timeout: 30, &:present?)
 
-  while page < page_count
+  while page <= page_count
     if not first
       next_btn = pervert.a(class: 'next')
       next_btn.wait_until(timeout: 30, &:present?).click
