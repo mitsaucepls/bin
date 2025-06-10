@@ -139,7 +139,7 @@ end
 command = ARGV.shift
 
 unless command
-  warn "Usage: nhentai [random|favorites|<id>]"
+  warn "Usage: nhentai [random|favorites|<id>|<search_terms>]"
   exit 1
 end
 
@@ -157,7 +157,19 @@ when 'favorites'
 when /\A\d+\z/
   play(browser, 0, command)
 else
-  warn "Unknown command: #{command}"
-  warn "Usage: nhentai [random|favorites|<id>]"
-  exit 1
+  query = ([command] + ARGV).join(' ')
+  encoded = URI.encode_www_form_component(query)
+  search_url = "https://nhentai.net/search/?q=#{encoded}"
+  browser.goto(search_url)
+
+  gallery_id = nil
+  loop do
+    if m = browser.url.match(%r{\/g\/(\d+)/?})
+      gallery_id = m[1]
+      break
+    end
+    sleep 1
+  end
+
+  play(browser, 0, gallery_id)
 end
