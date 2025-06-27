@@ -3,7 +3,7 @@
 #
 
 # If not running interactively, don't do anything
-# [[ $- != *i* ]] && return
+[[ $- != *i* ]] && return
 
 # Aliases
 alias ls='ls --color=auto'
@@ -20,7 +20,12 @@ alias grep='rg'
 alias snvm='source /usr/share/nvm/init-nvm.sh'
 alias password='pwgen -s'
 alias rpcs3='QT_QPA_PLATFORM=xcb rpcs3'
-alias remote='waypipe --remote-bin="export XDG_RUNTIME_DIR=/tmp/xdg-runtime; ~/.nix-profile/bin/waypipe" ssh coder.nvim'
+# alias remote='waypipe --remote-bin="export XDG_RUNTIME_DIR=/tmp/xdg-runtime; ~/.nix-profile/bin/waypipe" ssh coder.nvim'
+alias remote='waypipe -n --remote-bin="XDG_RUNTIME_DIR=/tmp/xdg-runtime ~/.nix-profile/bin/waypipe" ssh '
+alias cam='mpv av://v4l2:/dev/video0 --profile=low-latency --untimed'
+
+# Key Bindings
+bindkey -s '^f' '^utmux-sessionizer^M'
 
 # Prompt
 autoload -U colors && colors # Load colors
@@ -44,16 +49,27 @@ stty stop undef # Disable ctrl-s to freeze terminal.
 setopt interactive_comments
 
 # source
-# put this in ~/.bashrc or ~/.profile
 source() {
   if [[ $1 == *"venv"* ]]; then
-    # activate the venv in the current directory
     builtin source "$PWD/$1/bin/activate"
   else
-    # fall back to the normal source behavior
     builtin source "$@"
   fi
 }
+
+# scp to cp
+scp_cp() {
+  for arg in "$@"; do
+    if [[ $arg == *:* ]] && [[ $arg != /*:* ]]; then
+      command scp "$@"
+      return
+    fi
+  done
+  command cp "$@"
+}
+
+alias cp='scp_cp'
+
 
 # History in cache directory:
 HISTSIZE=10000000
@@ -72,6 +88,7 @@ _comp_options+=(globdots) # Include hidden files.
 export PATH=$PATH:/opt/google/chrome
 export PATH=$PATH:$HOME/.config/bin
 export PATH=$PATH:$HOME/.cargo/bin
+export PATH=$PATH:$HOME/.nix-profile/bin
 
 # Other environment variables
 export XDG_CONFIG_HOME="$HOME/.config"
@@ -132,13 +149,10 @@ lfcd () {
 }
 
 # Edit line in vim with ctrl-e:
-# Key Bindings
-
-bindkey -s '^f' '^utmux-sessionizer^M'
-
 autoload edit-command-line; zle -N edit-command-line
 bindkey '^e' edit-command-line
 bindkey -M vicmd '^[[P' vi-delete-char
 bindkey -M vicmd '^e' edit-command-line
 bindkey -M visual '^[[P' vi-delete
 eval "$(direnv hook zsh)"
+eval "$(rbenv init -)"
