@@ -1,5 +1,8 @@
 #!/usr/bin/bash
 
+PROXY_URL="http://sia-lb.telekom.de:8080"
+NO_PROXY="localhost,127.0.0.1,.telekom.de,.t-systems.com"
+
 INSTALL_DOCKER=false
 
 parse_arguments() {
@@ -45,9 +48,9 @@ configure_system_proxy() {
     cat <<EOL >> /etc/environment
 
 # SIA Proxy Configuration
-http_proxy="http://sia-lb.telekom.de:8080"
-https_proxy="http://sia-lb.telekom.de:8080"
-no_proxy="localhost,127.0.0.1,.telekom.de,.t-systems.com"
+http_proxy="$PROXY_URL"
+https_proxy="$PROXY_URL"
+no_proxy="$NO_PROXY"
 EOL
     echo "Proxy settings added to /etc/environment."
   fi
@@ -60,9 +63,9 @@ configure_profile_proxy() {
     echo "Profile script already exists at /etc/profile.d/proxy.sh."
   else
     cat <<EOL > /etc/profile.d/proxy.sh
-export http_proxy="http://sia-lb.telekom.de:8080"
-export https_proxy="http://sia-lb.telekom.de:8080"
-export no_proxy="localhost,127.0.0.1,.telekom.de,.t-systems.com"
+export http_proxy="$PROXY_URL"
+export https_proxy="$PROXY_URL"
+export no_proxy="$NO_PROXY"
 EOL
     chmod +x /etc/profile.d/proxy.sh
     echo "Profile script created and made executable."
@@ -115,9 +118,9 @@ configure_docker_proxy() {
   mkdir -p /etc/systemd/system/docker.service.d
   cat <<EOL > /etc/systemd/system/docker.service.d/http-proxy.conf
 [Service]
-Environment="http_proxy=http://sia-lb.telekom.de:8080/"
-Environment="https_proxy=http://sia-lb.telekom.de:8080/"
-Environment="no_proxy=localhost,127.0.0.1,.telekom.de,.t-systems.com"
+Environment="http_proxy=$PROXY_URL/"
+Environment="https_proxy=$PROXY_URL/"
+Environment="no_proxy=$NO_PROXY"
 EOL
 
   if [ ! -f /etc/docker/daemon.json ]; then
